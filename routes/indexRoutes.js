@@ -11,8 +11,9 @@ router.get('/', forwardAuthenticationIndex, (req, res) => res.render('index', {
 }));
 
 router.get('/logOut', (req, res) => {
-   req.logOut();
-   res.redirect('/');
+   req.session.destroy(err => {
+      res.redirect('/');
+   })
 });
 
 module.exports = router;

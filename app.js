@@ -48,9 +48,13 @@ app.use(
 app.use(
    session({
       secret: 'secret',
-      resave: true,
-      saveUninitialized: true,
+      resave: false,
+      saveUninitialized: false,
       store: store
+      // cookie: {
+      //    maxAge: 3600000,
+      //    expires: new Date(Date.now() + 3600000)
+      // }
    })
 );
 
