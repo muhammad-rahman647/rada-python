@@ -16,7 +16,8 @@ const {
    resetPassword,
    uploadOne,
    verifyImages,
-   verifyName
+   verifyName,
+   getUserAllEmployees
 } = require('../controllers/userController');
 
 const {
@@ -42,6 +43,8 @@ router.post('/login', (req, res, next) => {
 router.get('/dashboard', ensureAuthenticatedUser, getUserDashboard);
 
 router.get('/add-Employee', ensureAuthenticatedUser, getAddEmployeeUser);
+
+router.get('/employees', ensureAuthenticatedUser, getUserAllEmployees);
 
 router.get('/forgotPassword', forwardAuthenticationUser, viewController.getUserForget);
 

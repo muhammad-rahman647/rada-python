@@ -1,4 +1,3 @@
-const ejs = require('ejs');
 const User = require('../models/user');
 
 const USERS_PER_PAGE = 3;

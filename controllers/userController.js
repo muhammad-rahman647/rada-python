@@ -5,6 +5,8 @@ const User = require('../models/user');
 const Employee = require('../models/employee');
 const factory = require('./factory');
 
+const EMPLOYEES_PER_PAGE = 10;
+
 const storage = multer.diskStorage({
    destination: (req, file, cb) => {
       cb(null, 'images')
@@ -34,7 +36,6 @@ const upload = multer({
 
 exports.uploadOne = upload.array('photos', 3);
 
-
 exports.getUserDashboard = async (req, res, next) => {
    try {
       const employees = await Employee.find({
@@ -58,6 +59,42 @@ exports.getUserDashboard = async (req, res, next) => {
    } catch (error) {
       next(error);
    }
+};
+
+exports.getUserAllEmployees = async (req, res, next) => {
+   const page = +req.query.page || 1;
+   let totalItems;
+
+   Employee.countDocuments().then(countEmployees => {
+         totalItems = countEmployees;
+         return Employee.find({
+               _user: req.user._id,
+            })
+            .skip((page - 1) * EMPLOYEES_PER_PAGE)
+            .limit(EMPLOYEES_PER_PAGE);
+      }).then((employees) => {
+         res.render('user/employees', {
+            pageTitle: 'Dashboard',
+            email: req.user.email,
+            path: '/user/dashboard',
+            pathLink: '/user/add-Employee',
+            name: 'Employee',
+            groupType: 'User',
+            link: '/user/employees',
+            employees: employees,
+            currentPage: page,
+            hasNextPage: EMPLOYEES_PER_PAGE * page < totalItems,
+            hasPreviousPage: page > 1 ? true : false,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalItems / EMPLOYEES_PER_PAGE)
+         });
+      })
+      .catch((err) => {
+         const error = new Error(err);
+         error.httpStatusCode = 500;
+         return next(error);
+      });
 };
 
 exports.getAddEmployeeUser = (req, res) => {

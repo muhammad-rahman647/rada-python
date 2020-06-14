@@ -1,0 +1,103 @@
+<%- include('../layout/head.ejs'); %>
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+   <%- include('../include/sidebar.ejs'); %>
+   <!-- End of Sidebar -->
+
+   <!-- Content Wrapper -->
+   <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+         <!-- Topbar -->
+         <%- include('../include/navigation.ejs'); %>
+         <!-- End of Topbar -->
+
+         <!-- Begin Page Content -->
+         <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <h1 class="h3 mb-2 text-gray-800">All Users Added By Admin</h1>
+
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4">
+               <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Users</h6>
+               </div>
+               <div class="card-body">
+                  <div class="table-responsive">
+                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                           <tr>
+                              <th>Name</th>
+                              <th>Year</th>
+                              <th>Month</th>
+                              <th>Download</th>
+                           </tr>
+                        </thead>
+
+                        <% if (employees.length > 0) {%>
+                        <tbody>
+                           <%for (let employee of employees) {%>
+                           <tr>
+                              <td><%= employee.name%></td>
+                              <td>Year</td>
+                              <td>Month</td>
+                              <td><a href="#" class="btn btn-primary">Download</a></td>
+                           </tr>
+                           <% } %>
+                        </tbody>
+                        <%} else {%>
+                        <h1>Employees not found....</h1>
+                        <% } %>
+                     </table>
+                  </div>
+                  <div class="ml-auto">
+                     <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                           <% if (hasPreviousPage) { %>
+                           <li class="page-item"><a class="page-link"
+                                 href="/admin/users?page=<%= previousPage%>">Previous</a></li>
+                           <% }%>
+                           <%for (let i=1; i<= lastPage; i++) {%>
+                           <li class="page-item"><a class="page-link" href="/admin/users?page=<%= i%>"><%= i%></a></li>
+                           <% } %>
+                           <% if (hasNextPage) {%>
+                           <li class="page-item"><a class="page-link" href="/admin/users?page=<%= nextPage%>">Next</a>
+                           </li>
+                           <% } %>
+                        </ul>
+                     </nav>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+      </div>
+
+   </div>
+
+</div>
+<!-- /.container-fluid -->
+
+</div>
+<!-- End of Main Content -->
+
+<!-- Footer -->
+<footer class="sticky-footer bg-white">
+   <div class="container my-auto">
+      <div class="copyright text-center my-auto">
+         <span>Copyright &copy; Your Website 2020</span>
+      </div>
+   </div>
+</footer>
+<!-- End of Footer -->
+
+</div>
+<!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+<%- include('../layout/end.ejs'); %>
