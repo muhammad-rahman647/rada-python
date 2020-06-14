@@ -1,7 +1,6 @@
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
-const expressLayouts = require('express-ejs-layouts');
 const passport = require('passport');
 const flash = require('connect-flash');
 const helmet = require('helmet');
@@ -17,12 +16,12 @@ const app = express();
 // passport config
 require('./config/passport')(passport);
 
-// set views
-app.use(expressLayouts);
-app.set('view engine', 'ejs');
-
 // serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+// set views
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // bodyParser
 app.use(express.json());
@@ -70,7 +69,15 @@ app.use('/user', userRoutes);
 app.use('*', (req, res, next) => {
    res.status(404).render('404', {
       pageTitle: 'Page Not Found',
-      bg_color: ''
+      bg_color: '',
+      email: ''
+   });
+});
+
+app.use((error, req, res, next) => {
+   console.log(error);
+   res.status(500).render('500', {
+      pageTitle: '500',
    });
 });
 

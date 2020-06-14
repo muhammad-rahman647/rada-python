@@ -7,16 +7,29 @@ const {
 } = require('../config/auth');
 
 const viewController = require('../controllers/viewController');
+const {
+   getUserDashboard,
+   getAddEmployeeUser,
+   createEmployee,
+   forgotPassword,
+   getUserReset,
+   resetPassword,
+   uploadOne,
+   verifyImages,
+   verifyName
+} = require('../controllers/userController');
+
+const {
+   validation1
+} = require('../controllers/validationController');
+
+const {
+   resetPasswordValidation
+} = require('../utils/validation');
 
 const router = express.Router();
 
 router.get('/login', forwardAuthenticationUser, viewController.getUserLogin);
-
-router.get('/forgot-password', forwardAuthenticationUser, viewController.getUserForget);
-
-router.get('/reset-password', forwardAuthenticationUser, viewController.getUserReset);
-
-router.get('/dashboard', ensureAuthenticatedUser, viewController.getUserDashboard);
 
 router.post('/login', (req, res, next) => {
    passport.authenticate('local-user', {
@@ -25,6 +38,20 @@ router.post('/login', (req, res, next) => {
       failureFlash: true,
    })(req, res, next);
 });
+
+router.get('/dashboard', ensureAuthenticatedUser, getUserDashboard);
+
+router.get('/add-Employee', ensureAuthenticatedUser, getAddEmployeeUser);
+
+router.get('/forgotPassword', forwardAuthenticationUser, viewController.getUserForget);
+
+router.get('/resetPassword/:token', forwardAuthenticationUser, getUserReset);
+
+router.post('/addEmployee', ensureAuthenticatedUser, uploadOne, verifyName, verifyImages, createEmployee);
+
+router.post('/forgotPassword', forwardAuthenticationUser, forgotPassword);
+
+router.post('/newPassword', forwardAuthenticationUser, validation1(resetPasswordValidation, 'user/reset-password'), resetPassword);
 
 // router.get('/signup', ensureAuthenticated, async (req, res) => {
 //    const newUser = new User({

@@ -19,51 +19,67 @@
          <div class="container-fluid">
 
             <!-- Page Heading -->
-            <h1 class="h3 mb-2 text-gray-800">Employees Added By users</h1>
+            <h1 class="h3 mb-2 text-gray-800">All Users Added By Admin</h1>
 
             <!-- DataTales Example -->
             <div class="card shadow mb-4">
                <div class="card-header py-3">
-                  <h6 class="m-0 font-weight-bold text-primary">Some Employees</h6>
+                  <h6 class="m-0 font-weight-bold text-primary">Users</h6>
                </div>
                <div class="card-body">
                   <div class="table-responsive">
                      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                            <tr>
+                              <th>Email</th>
                               <th>Name</th>
-                              <th>Year</th>
-                              <th>Month</th>
-                              <th>Download</th>
+                              <th>Company Name</th>
+                              <th>No. of Employees</th>
                            </tr>
                         </thead>
-
-                        <% if (employees.length > 0) {%>
+                        <% if (users.length > 0) {%>
                         <tbody>
-                           <%for (let employee of employees) {%>
+                           <%for (let user of users) {%>
                            <tr>
-                              <td><%= employee.name%></td>
-                              <td>Year</td>
-                              <td>Month</td>
-                              <td><a href="#" class="btn btn-primary">Download</a></td>
+                              <td><%= user.email%></td>
+                              <td><%= user.name%></td>
+                              <td><%= user.companyName%></td>
+                              <td><%= user.employees%></td>
                            </tr>
                            <% } %>
                         </tbody>
                         <%} else {%>
                         <h1>Users not found....</h1>
                         <% } %>
-
                      </table>
+                  </div>
+                  <div class="ml-auto">
+                     <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                           <% if (hasPreviousPage) { %>
+                           <li class="page-item"><a class="page-link"
+                                 href="/admin/users?page=<%= previousPage%>">Previous</a></li>
+                           <% }%>
+                           <%for (let i=1; i<= lastPage; i++) {%>
+                           <li class="page-item"><a class="page-link" href="/admin/users?page=<%= i%>"><%= i%></a></li>
+                           <% } %>
+                           <% if (hasNextPage) {%>
+                           <li class="page-item"><a class="page-link" href="/admin/users?page=<%= nextPage%>">Next</a>
+                           </li>
+                           <% } %>
+                        </ul>
+                     </nav>
                   </div>
                </div>
             </div>
-
          </div>
 
       </div>
 
    </div>
-   <!-- /.container-fluid -->
+
+</div>
+<!-- /.container-fluid -->
 
 </div>
 <!-- End of Main Content -->

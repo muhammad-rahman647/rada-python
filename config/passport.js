@@ -43,7 +43,8 @@ module.exports = function (passport) {
       'local-user',
       new LocalStrategy({
          usernameField: 'email',
-         passwordField: 'password'
+         passwordField: 'password',
+         usernameField: 'name'
       }, (email, password, done) => {
          // Match user
          User.findOne({

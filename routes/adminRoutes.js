@@ -6,11 +6,15 @@ const {
    forwardAuthentication
 } = require('../config/auth');
 const {
-   getAdminDashboard,
    getAdminForget,
    getAdminLogin,
-   getAddUser
 } = require('../controllers/viewController');
+
+const {
+   getAddUser,
+   getAdminDashboard,
+   getAdminAllUsers
+} = require('../controllers/adminController');
 const {
    createUser
 } = require('../controllers/userController');
@@ -31,7 +35,9 @@ router.get('/forgot-password', forwardAuthentication, getAdminForget);
 
 router.get('/dashboard', ensureAuthenticated, getAdminDashboard);
 
-router.get('/add-user', ensureAuthenticated, getAddUser)
+router.get('/users', ensureAuthenticated, getAdminAllUsers);
+
+router.get('/add-users', ensureAuthenticated, getAddUser)
 
 router.post('/login', (req, res, next) => {
    passport.authenticate('local-Admin', {
