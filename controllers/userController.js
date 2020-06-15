@@ -49,10 +49,11 @@ exports.getUserDashboard = async (req, res, next) => {
       return res.render('user/dashboard', {
          pageTitle: 'Dashboard',
          email: req.user.email,
+         companyName: req.user.companyName,
          path: '/user/dashboard',
          pathLink: '/user/add-Employee',
          name: 'Employee',
-         groupType: 'User',
+         groupType: req.user.name,
          link: '/user/employees',
          employees: employees
       });
@@ -77,9 +78,10 @@ exports.getUserAllEmployees = async (req, res, next) => {
             pageTitle: 'Dashboard',
             email: req.user.email,
             path: '/user/dashboard',
+            companyName: req.user.companyName,
             pathLink: '/user/add-Employee',
             name: 'Employee',
-            groupType: 'User',
+            groupType: req.user.name,
             link: '/user/employees',
             employees: employees,
             currentPage: page,
@@ -104,7 +106,7 @@ exports.getAddEmployeeUser = (req, res) => {
       path: '/user/dashboard',
       pathLink: '/user/add-Employee',
       name: 'Employee',
-      groupType: 'User',
+      groupType: req.user.name,
       link: '/user/employees',
       _user: req.user._id
    });
@@ -126,7 +128,7 @@ exports.verifyName = async (req, res, next) => {
             name: 'Employee',
             hasError: true,
             name: req.body.name,
-            groupType: 'User',
+            groupType: req.user.name,
             link: '/user/employees',
             _user: req.user._id,
             error_msg: 'name is already in use please another name...'
@@ -148,7 +150,7 @@ exports.verifyImages = (req, res, next) => {
          name: 'Employee',
          hasError: true,
          name: req.body.name,
-         groupType: 'User',
+         groupType: req.user.name,
          link: '/user/employees',
          _user: req.user._id,
          error_msg: 'Please provide an images or name....'
@@ -259,7 +261,6 @@ exports.getUserReset = async (req, res, next) => {
       }
       res.status(200).render('user/reset-password', {
          pageTitle: 'Reset Password',
-         bg_color: 'bg-gradient-primary',
          userId: user._id,
          resetToken: hashedToken
       })
