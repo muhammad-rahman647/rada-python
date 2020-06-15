@@ -11,7 +11,11 @@ exports.validation = (schema, renderView) => {
             //  const message = details.map(i => i.message).join(',');
             return res.render(renderView, {
                pageTitle: 'Add User',
-               bg_color: '',
+               path: '/admin/dashboard',
+               pathLink: '/admin/add-users',
+               groupType: 'Admin',
+               link: '/admin/users',
+               name: 'Users',
                email: req.user.email,
                _admin: req.user._id,
                hasError: true,
@@ -21,12 +25,12 @@ exports.validation = (schema, renderView) => {
                   name: req.body.name,
                   password: req.body.password,
                   companyName: req.body.companyName
-               }
+               },
             });
          }
          next();
       } catch (error) {
-         console.log(error);
+         next(error);
       }
    };
 }
