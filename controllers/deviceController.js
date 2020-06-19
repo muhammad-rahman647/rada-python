@@ -25,9 +25,9 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
    });
 
    python.on('close', (code) => {
-      console.log(`child process close all stdio with code ${code}`);
+      .log(`child process close all stdio with code ${code}`);
 
-      console.log(employeeId);
+      .log(employeeId);
 
       let id = employeeId.replace(/[\[\]']+/g, '');
 
