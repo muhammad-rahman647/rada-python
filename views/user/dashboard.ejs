@@ -45,7 +45,7 @@
                            <%for (let employee of employees) {%>
                            <tr>
                               <td><%= employee.name%></td>
-                              <form action="/api/v1/employee/<%= employee._id%>/attendence" method="POST">
+                              <form action="/api/v1/employee/<%= employee._id%>/attendence" method="GET">
                                  <td>
                                     <select name="year" class="form-control">
                                        <option value="">Select Year</option>
