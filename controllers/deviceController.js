@@ -9,6 +9,12 @@ const Attendence = require('../models/attendence');
 
 exports.receiveRequest = catchAsync(async (req, res, next) => {
 
+   if (!req.body.userId || !req.body.temperature) {
+      const error = new Error('Please provide the user ID');
+      error.statusCode = 404;
+      return next(error);
+   }
+
    let employeeId;
 
    const filePath = req.file.path;
@@ -31,6 +37,12 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
 
       id = id.replace(/\r?\n|\r/g, "");
 
+      if (!id) {
+         const error = new Error('Please provide the user ID');
+         error.statusCode = 404;
+         return next(error);
+      }
+
       const attendence = new Attendence({
          temperature: req.body.temperature,
          _employeeId: id
@@ -47,10 +59,24 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
             console.log(`file is deleted!`);
          });
 
+         if (code === 0) {
+            res.status(200).send({
+               status: 'success',
+               data: {}
+            });
+         }
+
       }).catch(err => console.log(err));
 
       // send data to browse;
-      res.status(200).send();
+      if (code === 1) {
+         return res.status(404).json({
+            status: 'fail',
+            data: {
+               message: 'No found User!'
+            }
+         });
+      }
    });
 
 });
