@@ -27,6 +27,7 @@
                   <h6 class="m-0 font-weight-bold text-primary">Users</h6>
                </div>
                <div class="card-body">
+                  <%- include('../partials/messages.ejs'); %>
                   <div class="table-responsive">
                      <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
@@ -43,9 +44,34 @@
                            <%for (let employee of employees) {%>
                            <tr>
                               <td><%= employee.name%></td>
-                              <td>Year</td>
-                              <td>Month</td>
-                              <td><a href="#" class="btn btn-primary">Download</a></td>
+                              <td>
+                                 <select name="year" class="form-control">
+                                    <option value="">Select Year</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                 </select>
+                              </td>
+                              <td>
+                                 <select name="month" class="form-control">
+                                    <option value="">Select Month</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                 </select>
+                              </td>
+                              <td><a href="/api/v1/employee/<%= employee._id%>/attendence"
+                                    class="btn btn-primary">Download</a></td>
                            </tr>
                            <% } %>
                         </tbody>
@@ -59,13 +85,15 @@
                         <ul class="pagination">
                            <% if (hasPreviousPage) { %>
                            <li class="page-item"><a class="page-link"
-                                 href="/admin/users?page=<%= previousPage%>">Previous</a></li>
+                                 href="/user/employees?page=<%= previousPage%>">Previous</a></li>
                            <% }%>
                            <%for (let i=1; i<= lastPage; i++) {%>
-                           <li class="page-item"><a class="page-link" href="/admin/users?page=<%= i%>"><%= i%></a></li>
+                           <li class="page-item"><a class="page-link" href="/user/employees?page=<%= i%>"><%= i%></a>
+                           </li>
                            <% } %>
                            <% if (hasNextPage) {%>
-                           <li class="page-item"><a class="page-link" href="/admin/users?page=<%= nextPage%>">Next</a>
+                           <li class="page-item"><a class="page-link"
+                                 href="/user/employees?page=<%= nextPage%>">Next</a>
                            </li>
                            <% } %>
                         </ul>

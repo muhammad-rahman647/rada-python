@@ -13,17 +13,19 @@ const compression = require('compression');
 const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRoutes');
 const indexRoutes = require('./routes/indexRoutes');
+const deviceRoutes = require('./routes/deviceRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
 
 const MONGODB_URI = process.env.DATABASE.replace(
-   '<PASSWORD>',
-   process.env.DATABASE_PASSWORD
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD
 );
 
 const app = express();
 
 const store = new mongoStore({
-   uri: MONGODB_URI,
-   collection: 'sessions'
+  uri: MONGODB_URI,
+  collection: 'sessions',
 });
 
 // passport config
@@ -37,30 +39,35 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // bodyParser
-app.use(express.json());
 app.use(
-   express.urlencoded({
-      extended: true,
-   })
+  express.json({
+    limit: '10kb',
+  })
+);
+app.use(
+  express.urlencoded({
+    limit: '50mb',
+    extended: true,
+  })
 );
 
 // session
 app.use(
-   session({
-      secret: 'secret',
-      resave: false,
-      saveUninitialized: false,
-      store: store
-      // cookie: {
-      //    maxAge: 3600000,
-      //    expires: new Date(Date.now() + 3600000)
-      // }
-   })
+  session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+    // cookie: {
+    //    maxAge: 3600000,
+    //    expires: new Date(Date.now() + 3600000)
+    // }
+  })
 );
 
 // development logging
 if (process.env.NODE_ENV === 'development') {
-   app.use(morgan('dev'));
+  app.use(morgan('dev'));
 }
 
 // secure headers
@@ -82,30 +89,43 @@ app.use(flash());
 
 // global vars
 app.use((req, res, next) => {
-   res.locals.success_msg = req.flash('success_msg');
-   res.locals.error_msg = req.flash('error_msg');
-   res.locals.error = req.flash('error');
-   next();
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
 });
 
 // Routes
 app.use('/', indexRoutes);
 app.use('/admin', adminRoutes);
 app.use('/user', userRoutes);
+app.use('/api/v1/device', deviceRoutes);
+app.use('/api/v1/employee', employeeRoutes);
 
 app.use('*', (req, res, next) => {
-   res.status(404).render('404', {
-      pageTitle: 'Page Not Found',
-      bg_color: '',
-      email: '',
-   });
+  res.status(404).render('404', {
+    pageTitle: 'Page Not Found',
+    bg_color: '',
+    email: '',
+  });
 });
 
 app.use((error, req, res, next) => {
-   console.log(error);
-   res.status(500).render('500', {
-      pageTitle: '500',
-   });
+  error.statusCode = error.statusCode || 500;
+  error.status = error.status || 'error';
+
+  if (req.originalUrl.startsWith('/api')) {
+    res.status(error.statusCode).json({
+      status: error.status,
+      error: error,
+      message: error.message,
+    });
+  }
+
+  console.log(error);
+  res.status(500).render('500', {
+    pageTitle: '500',
+  });
 });
 
 // app.all('*', (req, res, next) => {

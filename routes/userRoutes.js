@@ -14,11 +14,14 @@ const {
    forgotPassword,
    getUserReset,
    resetPassword,
-   uploadOne,
    verifyImages,
    verifyName,
    getUserAllEmployees
 } = require('../controllers/userController');
+
+const {
+   uploadThree
+} = require('../controllers/imageController');
 
 const {
    validation1
@@ -50,7 +53,7 @@ router.get('/forgotPassword', forwardAuthenticationUser, viewController.getUserF
 
 router.get('/resetPassword/:token', forwardAuthenticationUser, getUserReset);
 
-router.post('/addEmployee', ensureAuthenticatedUser, uploadOne, verifyName, verifyImages, createEmployee);
+router.post('/addEmployee', ensureAuthenticatedUser, uploadThree, verifyName, verifyImages, createEmployee);
 
 router.post('/forgotPassword', forwardAuthenticationUser, forgotPassword);
 

@@ -1,12 +1,17 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
+const Schema = mongoose.Schema;
 
 const userSchema = Schema({
    email: {
       type: String,
       required: [true, 'name is required']
+   },
+   userId: {
+      type: String,
+      unique: true,
+      required: true
    },
    name: {
       type: String,
@@ -42,6 +47,13 @@ userSchema.virtual('employees', {
    justOne: false,
    count: true
 });
+
+// userSchema.virtual('employee', {
+//    ref: 'Employee',
+//    localField: '_id',
+//    foreignField: '_user',
+//    justOne: true
+// });
 
 userSchema.pre('save', async function (next) {
    if (!this.isModified('password')) return next();

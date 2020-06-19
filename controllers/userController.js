@@ -1,40 +1,14 @@
+const fs = require('fs');
+const {
+   spawn
+} = require('child_process');
 const crypto = require('crypto');
-const multer = require('multer');
 
 const User = require('../models/user');
 const Employee = require('../models/employee');
 const factory = require('./factory');
 
 const EMPLOYEES_PER_PAGE = 10;
-
-const storage = multer.diskStorage({
-   destination: (req, file, cb) => {
-      cb(null, 'images')
-   },
-   filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname)
-   }
-});
-
-const fileFilter = (req, file, cb) => {
-   if (
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'image/jpg' ||
-      file.mimetype === 'image/jpeg'
-   ) {
-      cb(null, true);
-   } else {
-      cb(null, false);
-   }
-};
-
-
-const upload = multer({
-   storage: storage,
-   fileFilter: fileFilter
-});
-
-exports.uploadOne = upload.array('photos', 3);
 
 exports.getUserDashboard = async (req, res, next) => {
    try {
@@ -108,12 +82,12 @@ exports.getAddEmployeeUser = (req, res) => {
       name: 'Employee',
       groupType: req.user.name,
       link: '/user/employees',
-      _user: req.user._id
+      _user: req.user._id,
+      _userId: req.user.userId
    });
 };
 
 exports.verifyName = async (req, res, next) => {
-   console.log(req.body);
    try {
       const employee = await Employee.findOne({
          name: req.body.name
@@ -131,6 +105,7 @@ exports.verifyName = async (req, res, next) => {
             groupType: req.user.name,
             link: '/user/employees',
             _user: req.user._id,
+            _userId: req.user.userId,
             error_msg: 'name is already in use please another name...'
          });
       }
@@ -153,6 +128,7 @@ exports.verifyImages = (req, res, next) => {
          groupType: req.user.name,
          link: '/user/employees',
          _user: req.user._id,
+         _userId: req.user.userId,
          error_msg: 'Please provide an images or name....'
       });
    }
@@ -160,23 +136,51 @@ exports.verifyImages = (req, res, next) => {
 }
 
 exports.createEmployee = async (req, res, next) => {
+
+   let trainId;
+
    req.body.photos = [];
-   req.files.forEach(file => req.body.photos.push(file.filename));
+   // req.body.dir = dir;
+
+   req.files.forEach(file => req.body.photos.push(file.path.replace(/\\/g, '/')));
+
+   // req.body.dir = req.files[0].split[0] + req.files[0].split[1];
+   req.body.dir = req.files[0].destination;
+
    try {
       const newEmployee = new Employee(req.body);
-
-      await newEmployee.save();
 
       if (!newEmployee) {
          const error = new Error('Something is going wrong please try age later....');
          return next(error)
       }
 
-      req.flash(
-         'success_msg',
-         'Successfully Added.....'
-      );
-      res.redirect('/user/add-Employee');
+      const python = spawn('python', [
+         'train.py',
+         `${newEmployee._userId}`,
+         `${newEmployee.name}`,
+         `./${newEmployee.dir}`,
+      ]);
+
+      python.stdout.on('data', function (data) {
+         console.log('Pipe data from python script ...');
+         trainId = data.toString();
+      });
+
+      python.on('close', (code) => {
+         console.log(`child process close all stdio with code ${code}`);
+         // send data to browse;
+
+         newEmployee.trainId = trainId.replace(/\r?\n|\r/g, "");
+         newEmployee.save().then().catch(err => console.log(err));
+
+         req.flash(
+            'success_msg',
+            'Successfully Added.....'
+         );
+         res.redirect('/user/add-Employee');
+      });
+
 
    } catch (error) {
       next(error);
@@ -217,6 +221,8 @@ exports.createUser = async (req, res, next) => {
          companyName,
          _admin: req.body._admin
       });
+
+      user.userId = 'rada' + user._id;
 
       await user.save();
 
