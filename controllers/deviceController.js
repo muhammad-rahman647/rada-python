@@ -25,15 +25,11 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
    });
 
    python.on('close', (code) => {
-      .log(`child process close all stdio with code ${code}`);
-
-      .log(employeeId);
+      console.log(`child process close all stdio with code ${code}`);
 
       let id = employeeId.replace(/[\[\]']+/g, '');
 
       id = id.replace(/\r?\n|\r/g, "");
-
-      console.log(id);
 
       const attendence = new Attendence({
          temperature: req.body.temperature,
