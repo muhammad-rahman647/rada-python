@@ -33,7 +33,7 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
    python.on('close', (code) => {
       console.log(`child process close all stdio with code ${code}`);
 
-      if (!id) {
+      if (!employeeId) {
          const error = new Error('Please provide the user ID');
          error.statusCode = 404;
          return next(error);
