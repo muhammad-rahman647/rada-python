@@ -8,7 +8,7 @@ const Attendence = require('../models/attendence');
 
 exports.check = (req, res, next) => {
 
-   if (!req.body.month || !req.body.year) {
+   if (!req.query.month || !req.query.year) {
       req.flash('error_msg', 'Please select month or date');
       return res.redirect('/user/dashboard');
    }
@@ -42,8 +42,8 @@ exports.attendence = catchAsync(async (req, res, next) => {
       },
       {
          $match: {
-            month: +req.body.month,
-            year: +req.body.year
+            month: +req.query.month,
+            year: +req.query.year
          }
       }
    ]);
