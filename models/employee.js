@@ -26,20 +26,20 @@ const employeeSchema = new Schema({
    }
 }, {
    timestamps: true,
-   // toJSON: {
-   //    virtuals: true
-   // },
-   // toObject: {
-   //    virtuals: true
-   // }
+   toJSON: {
+      virtuals: true
+   },
+   toObject: {
+      virtuals: true
+   }
 });
 
-// employeeSchema.virtual('attendence', {
-//    ref: 'Attendence',
-//    localField: 'trainId',
-//    foreignField: '_employeeId',
-//    justOne: false,
-// });
+employeeSchema.virtual('attendence', {
+   ref: 'Attendence',
+   localField: 'trainId',
+   foreignField: '_employeeId',
+   justOne: true,
+});
 
 const Employee = mongoose.model('Employee', employeeSchema);
 

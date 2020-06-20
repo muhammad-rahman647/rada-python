@@ -1,99 +1,94 @@
 const fs = require('fs');
 const path = require('path');
-const PDFDocument = require('pdfkit');
+const fastcsv = require('fast-csv');
 const catchAsync = require('../utils/catchAsync');
 
 const Employee = require('../models/employee');
 const Attendence = require('../models/attendence');
 
 exports.check = (req, res, next) => {
-
-   if (!req.query.month || !req.query.year) {
-      req.flash('error_msg', 'Please select month or date');
-      return res.redirect('/user/dashboard');
-   }
-   next();
-}
+  if (!req.query.month || !req.query.year) {
+    req.flash('error_msg', 'Please select month or date');
+    return res.redirect('/user/dashboard');
+  }
+  next();
+};
 
 exports.attendence = catchAsync(async (req, res, next) => {
+  const employee = await Employee.findById(req.params.id);
 
-   const employee = await Employee.findById(req.params.id);
+  if (!employee) {
+    req.flash('error_msg', 'No document found this ID');
+    return res.redirect('/user/dashboard');
+  }
 
-   if (!employee) {
-      req.flash('error_msg', 'No document found this ID');
-      return res.redirect('/user/dashboard');
-   }
-
-   const attendence = await Attendence.aggregate([{
-         $match: {
-            _employeeId: employee.trainId
-         }
+  const attendence = await Attendence.aggregate([{
+      $match: {
+        _employeeId: employee.trainId,
       },
-      {
-         $project: {
-            month: {
-               $month: "$date"
-            },
-            year: {
-               $year: "$date"
-            },
-            date: 1
-         }
+    },
+    {
+      $project: {
+        month: {
+          $month: '$date',
+        },
+        year: {
+          $year: '$date',
+        },
+        day: {
+          $dayOfMonth: '$date',
+        },
+        date: {
+          $dateToString: {
+            format: '%Y-%m-%d',
+            date: '$date',
+            timezone: '+05:00',
+          },
+        },
+        time: {
+          $dateToString: {
+            format: '%H:%M:%S:%L%z',
+            date: '$date',
+            timezone: '+05:00',
+          },
+        },
       },
-      {
-         $match: {
-            month: +req.query.month,
-            year: +req.query.year
-         }
-      }
-   ]);
+    },
+    {
+      $match: {
+        month: +req.query.month,
+        year: +req.query.year,
+      },
+    },
+    {
+      $project: {
+        date: 1,
+        time: 1,
+      },
+    },
+  ]);
 
-   if (attendence.length === 0) {
-      req.flash('error_msg', 'selected year or month data not found.');
-      return res.redirect('/user/dashboard');
-   }
+  if (attendence.length === 0) {
+    req.flash('error_msg', 'selected year or month data not found.');
+    return res.redirect('/user/dashboard');
+  }
 
-   const attendenceName = 'attendence-' + employee._id + '.pdf';
-   const invoicePath = path.join('data', 'attendences', attendenceName);
+  const attendenceName = 'attendence-' + employee._id + '.csv';
 
-   const pdfDoc = new PDFDocument();
-   res.setHeader('Content-Type', 'application/pdf');
-   res.setHeader(
-      'Content-Disposition',
-      'inline; filename="' + attendenceName + '"'
-   );
-   pdfDoc.pipe(fs.createWriteStream(invoicePath));
-   pdfDoc.pipe(res);
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader(
+    'Content-Disposition',
+    'inline; filename="' + attendenceName + '"'
+  );
+  fastcsv.write(attendence, {
+    headers: true
+  }).pipe(res);
 
-   pdfDoc.fontSize(26).text('Attendence', {
-      underline: true,
-   });
-   pdfDoc.text('-----------------------');
-   pdfDoc.fontSize(24).text('Employee Details');
-   pdfDoc.text('-----------------------');
-
-   pdfDoc.fontSize(22).text(`name ${employee.name}`);
-   pdfDoc.text('-----------------------');
-
-   pdfDoc.fontSize(24).text('Attendence Details');
-
-   attendence.forEach((atten) => {
-      pdfDoc
-         .fontSize(16)
-         .text(
-            employee.name +
-            ' ---- ' +
-            atten.date
-         );
-   });
-
-   pdfDoc.end();
-
-   // res.status(200).json({
-   //    status: 'success',
-   //    data: {
-   //       employee,
-   //       attendence
-   //    }
-   // });
+  // res.status(200).json({
+  //    status: 'success',
+  //    data: {
+  //       employee,
+  //       attendence
+  //    }
+  // });
 });
