@@ -1,6 +1,6 @@
 const User = require('../models/user');
 
-const USERS_PER_PAGE = 3;
+const USERS_PER_PAGE = 50;
 
 exports.getAdminDashboard = async (req, res, next) => {
   try {

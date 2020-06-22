@@ -101,7 +101,11 @@ exports.getByDate = catchAsync(async (req, res, next) => {
     req.flash('error_msg', 'Please select date');
     return res.redirect('/user/dashboard');
   }
+  const momentObj = moment(`${req.query.date}`);
+
   const year = moment().year();
+  const month = moment().month();
+  const day = momentObj.date();
 
   const employees = await Attendence.aggregate([{
       $lookup: {
@@ -115,6 +119,9 @@ exports.getByDate = catchAsync(async (req, res, next) => {
       $project: {
         year: {
           $year: '$date',
+        },
+        month: {
+          $month: '$date'
         },
         day: {
           $dayOfMonth: '$date',
@@ -142,7 +149,8 @@ exports.getByDate = catchAsync(async (req, res, next) => {
     {
       $match: {
         year: year,
-        day: +req.query.date
+        month: month,
+        day: day
       },
     },
     {

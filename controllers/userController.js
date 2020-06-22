@@ -8,7 +8,7 @@ const User = require('../models/user');
 const Employee = require('../models/employee');
 const factory = require('./factory');
 
-const EMPLOYEES_PER_PAGE = 10;
+const EMPLOYEES_PER_PAGE = 50;
 
 exports.getUserDashboard = async (req, res, next) => {
    try {

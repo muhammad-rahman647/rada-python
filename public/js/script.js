@@ -30,3 +30,15 @@ function previewImages() {
 }
 
 document.querySelector('#file-input').addEventListener("change", previewImages);
+
+const date = new Date();
+const year = date.getFullYear();
+const month = date.getMonth();
+
+$('#datepicker').datepicker({
+   uiLibrary: 'bootstrap4',
+   minViewMode: 1,
+   autoclose: true,
+   startDate: new Date(year, month, '01'), //set it here
+   endDate: new Date(year + 1, month, '31')
+});
