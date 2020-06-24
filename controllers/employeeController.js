@@ -21,7 +21,8 @@ exports.attendence = catchAsync(async (req, res, next) => {
     return res.redirect('/user/dashboard');
   }
 
-  const attendence = await Attendence.aggregate([{
+  const attendence = await Attendence.aggregate([
+    {
       $match: {
         _employeeId: employee.trainId,
       },
@@ -74,12 +75,12 @@ exports.attendence = catchAsync(async (req, res, next) => {
     return res.redirect('/user/dashboard');
   }
 
-  const newData = attendence.map(el => {
+  const newData = attendence.map((el) => {
     return {
       ...el,
-      employee_name: employee.name
-    }
-  })
+      employee_name: employee.name,
+    };
+  });
 
   const attendenceName = 'attendence-' + employee._id + '.csv';
 
@@ -93,7 +94,6 @@ exports.attendence = catchAsync(async (req, res, next) => {
       headers: true,
     })
     .pipe(res);
-
 });
 
 exports.getByDate = catchAsync(async (req, res, next) => {
@@ -103,17 +103,18 @@ exports.getByDate = catchAsync(async (req, res, next) => {
   }
   const momentObj = moment(`${req.query.date}`);
 
-  const year = moment().year();
-  const month = moment().month();
+  const year = momentObj.year();
+  const month = momentObj.month() + 1;
   const day = momentObj.date();
 
-  const employees = await Attendence.aggregate([{
+  const employees = await Attendence.aggregate([
+    {
       $lookup: {
-        from: "employees",
-        localField: "_employeeId",
-        foreignField: "trainId",
-        as: "name"
-      }
+        from: 'employees',
+        localField: '_employeeId',
+        foreignField: 'trainId',
+        as: 'name',
+      },
     },
     {
       $project: {
@@ -121,7 +122,7 @@ exports.getByDate = catchAsync(async (req, res, next) => {
           $year: '$date',
         },
         month: {
-          $month: '$date'
+          $month: '$date',
         },
         day: {
           $dayOfMonth: '$date',
@@ -142,26 +143,26 @@ exports.getByDate = catchAsync(async (req, res, next) => {
         },
         temperature: 1,
         name: {
-          $mergeObjects: "$name"
-        }
+          $mergeObjects: '$name',
+        },
       },
     },
     {
       $match: {
-        year: year,
-        month: month,
-        day: day
+        year: +year,
+        month: +month,
+        day: +day,
       },
     },
     {
       $project: {
         _id: 0,
-        "name.name": 1,
+        'name.name': 1,
         time: 1,
         date: 1,
         temperature: 1,
-      }
-    }
+      },
+    },
   ]);
 
   if (employees.length === 0) {
@@ -169,20 +170,17 @@ exports.getByDate = catchAsync(async (req, res, next) => {
     return res.redirect('/user/dashboard');
   }
 
-  const changedEmployee = employees.map(el => {
+  const changedEmployee = employees.map((el) => {
     return {
       ...el,
-      name: el.name.name
-    }
+      name: el.name.name,
+    };
   });
 
   const attendence = 'attendence-' + Date.now() + '.csv';
 
   res.setHeader('Content-Type', 'text/csv');
-  res.setHeader(
-    'Content-Disposition',
-    'inline; filename="' + attendence + '"'
-  );
+  res.setHeader('Content-Disposition', 'inline; filename="' + attendence + '"');
   fastcsv
     .write(changedEmployee, {
       headers: true,
@@ -192,16 +190,19 @@ exports.getByDate = catchAsync(async (req, res, next) => {
 
 exports.getCurrentDateAttendence = catchAsync(async (req, res, next) => {
   const year = moment().year();
-  const month = moment().month();
+  const month = moment().month() + 1;
   const date = moment().date();
 
-  const employees = await Attendence.aggregate([{
+  console.log(year, month, date);
+
+  const employees = await Attendence.aggregate([
+    {
       $lookup: {
-        from: "employees",
-        localField: "_employeeId",
-        foreignField: "trainId",
-        as: "name"
-      }
+        from: 'employees',
+        localField: '_employeeId',
+        foreignField: 'trainId',
+        as: 'name',
+      },
     },
     {
       $project: {
@@ -212,7 +213,7 @@ exports.getCurrentDateAttendence = catchAsync(async (req, res, next) => {
           $dayOfMonth: '$date',
         },
         month: {
-          $month: "$date"
+          $month: '$date',
         },
         date: {
           $dateToString: {
@@ -230,26 +231,26 @@ exports.getCurrentDateAttendence = catchAsync(async (req, res, next) => {
         },
         temperature: 1,
         name: {
-          $mergeObjects: "$name"
-        }
+          $mergeObjects: '$name',
+        },
       },
     },
     {
       $match: {
-        year: year,
-        month: month,
-        day: date
+        year: +year,
+        month: +month,
+        day: +date,
       },
     },
     {
       $project: {
         _id: 0,
-        "name.name": 1,
+        'name.name': 1,
         time: 1,
         date: 1,
         temperature: 1,
-      }
-    }
+      },
+    },
   ]);
 
   if (employees.length === 0) {
@@ -257,20 +258,17 @@ exports.getCurrentDateAttendence = catchAsync(async (req, res, next) => {
     return res.redirect('/user/dashboard');
   }
 
-  const changedEmployee = employees.map(el => {
+  const changedEmployee = employees.map((el) => {
     return {
       ...el,
-      name: el.name.name
-    }
+      name: el.name.name,
+    };
   });
 
   const attendence = 'attendence-' + Date.now() + '.csv';
 
   res.setHeader('Content-Type', 'text/csv');
-  res.setHeader(
-    'Content-Disposition',
-    'inline; filename="' + attendence + '"'
-  );
+  res.setHeader('Content-Disposition', 'inline; filename="' + attendence + '"');
   fastcsv
     .write(changedEmployee, {
       headers: true,
