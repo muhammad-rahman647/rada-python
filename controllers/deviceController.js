@@ -3,11 +3,54 @@ const {
    spawn
 } = require('child_process');
 const catchAsync = require('../utils/catchAsync');
-
 const Attendence = require('../models/attendence');
+const moment = require('moment');
+
+const promiseReplace = id => new Promise((resolves, rejects) => {
+   resolves(id.replace(/[\[\]']+/g, ''));
+   if (!id) {
+      rejects('id not found.');
+   }
+});
+
+const removeFile = req => {
+   fs.rmdir(`./${req.file.destination}`, {
+      recursive: true
+   }, (err) => {
+      if (err) {
+         throw err;
+      }
+
+      console.log(`file is deleted!`);
+   });
+}
+
+const createAttendence = (id, code, req, res) => {
+   const attendence = new Attendence({
+      _employeeId: id
+   });
+   attendence.temperature = req.body.temperature;
+   attendence.save().then(() => {
+
+      removeFile(req);
+      if (code === 0) {
+         res.status(200).send({
+            status: 'success',
+            data: {}
+         });
+      }
+
+   }).catch(err => console.log(err));
+}
 
 
 exports.receiveRequest = catchAsync(async (req, res, next) => {
+
+   const year = moment().year();
+   const month = moment().month() + 1;
+   const day = moment().date();
+
+   const date = moment.utc(`${year}-${month}-${day}`, "YYYY-MM-DD");
 
    if (!req.body.userId || !req.body.temperature) {
       const error = new Error('Please provide the user ID');
@@ -39,35 +82,47 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
          return next(error);
       }
 
-      let id = employeeId.replace(/[\[\]']+/g, '');
+      // let attendece = false;
 
-      id = id.replace(/\r?\n|\r/g, "");
+      promiseReplace(employeeId).then(uid => {
+         id = uid.trim();
 
+         if (id) {
+            Attendence.findOne({
+               _employeeId: id,
+               date: {
+                  $eq: date
+               }
+            }).then(docs => {
+               if (!docs) {
+                  return createAttendence(id, code, req, res);
+               }
+               docs.temperature = req.body.temperature;
+               docs.markAttendence();
+               docs.save().then((doc) => {
+                  removeFile(req);
 
-      const attendence = new Attendence({
-         temperature: req.body.temperature,
-         _employeeId: id
-      });
-      attendence.save().then(() => {
-
-         fs.rmdir(`./${req.file.destination}`, {
-            recursive: true
-         }, (err) => {
-            if (err) {
-               throw err;
-            }
-
-            console.log(`file is deleted!`);
-         });
-
-         if (code === 0) {
-            res.status(200).send({
-               status: 'success',
-               data: {}
-            });
+                  if (code === 0) {
+                     return res.status(200).send({
+                        status: 'success',
+                        data: {}
+                     });
+                  }
+               }).catch(err => next(err));
+            }).catch(err => next(err));
          }
 
       }).catch(err => console.log(err));
+
+      // Attendence.findOne({
+      //    _employeeId: id,
+      //    date: new Date(year, month, date)
+      // }).then(doc => {
+      //    if (!doc) {
+      //       return attendece = true;
+      //    }
+      //    console.log(doc);
+      // }).catch(err => console.log(err));
 
       // send data to browse;
       if (code === 1) {

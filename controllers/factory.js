@@ -32,7 +32,6 @@ exports.forgotPasswordOne = (Model, schemaType, renderView) =>
          validateBeforeSave: false,
       });
 
-      console.log(doc);
 
       try {
          const restURL = `${req.protocol}://${req.get(
@@ -72,7 +71,7 @@ exports.resetPasswordOne = (Model, renderView, redirectView) =>
          token,
          userId
       } = req.body;
-      console.log(req.body);
+
 
       const doc = await Model.findOne({
          _id: req.body.userId,

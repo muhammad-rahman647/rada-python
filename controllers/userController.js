@@ -92,7 +92,6 @@ exports.verifyName = async (req, res, next) => {
       const employee = await Employee.findOne({
          name: req.body.name
       });
-      console.log(employee);
       if (employee) {
          return res.render('user/add-employee', {
             pageTitle: 'Adding Employee',
@@ -171,14 +170,15 @@ exports.createEmployee = async (req, res, next) => {
          console.log(`child process close all stdio with code ${code}`);
          // send data to browse;
 
-         newEmployee.trainId = trainId.replace(/\r?\n|\r/g, "");
-         newEmployee.save().then().catch(err => console.log(err));
+         newEmployee.trainId = trainId.trim();
+         newEmployee.save().then(() => {
+            req.flash(
+               'success_msg',
+               'Successfully Added.....'
+            );
+            res.redirect('/user/add-Employee');
+         }).catch(err => console.log(err));
 
-         req.flash(
-            'success_msg',
-            'Successfully Added.....'
-         );
-         res.redirect('/user/add-Employee');
       });
 
 
