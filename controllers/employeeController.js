@@ -99,8 +99,11 @@ exports.attendence = catchAsync(async (req, res, next) => {
     return res.redirect('/user/dashboard');
   }
 
-  attendence.push({
-    total_attendence: attendence.length
+  const newattendence = attendence.map(att => {
+    return {
+      ...att,
+      total_attendence: attendence.length
+    }
   });
 
   const attendenceName = 'attendence-' + employee._id + '.csv';
@@ -111,7 +114,7 @@ exports.attendence = catchAsync(async (req, res, next) => {
     'inline; filename="' + attendenceName + '"'
   );
   fastcsv
-    .write(attendence, {
+    .write(newattendence, {
       headers: true,
     })
     .pipe(res);
