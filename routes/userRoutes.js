@@ -16,11 +16,11 @@ const {
    resetPassword,
    verifyImages,
    verifyName,
-   getUserAllEmployees
+   getUserAllEmployees,
 } = require('../controllers/userController');
 
 const {
-   uploadThree
+   uploadThree,
 } = require('../controllers/imageController');
 
 const {

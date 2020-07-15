@@ -2,9 +2,12 @@ const fs = require('fs');
 const {
    spawn
 } = require('child_process');
+const util = require('util');
+const directoryCreator = util.promisify(fs.exists);
+const moment = require('moment');
+const sharp = require('sharp');
 const catchAsync = require('../utils/catchAsync');
 const Attendence = require('../models/attendence');
-const moment = require('moment');
 
 const promiseReplace = id => new Promise((resolves, rejects) => {
    resolves(id.replace(/[\[\]']+/g, ''));
@@ -13,8 +16,8 @@ const promiseReplace = id => new Promise((resolves, rejects) => {
    }
 });
 
-const removeFile = req => {
-   fs.rmdir(`./${req.file.destination}`, {
+const removeFile = dir => {
+   fs.rmdir(`${dir}`, {
       recursive: true
    }, (err) => {
       if (err) {
@@ -52,6 +55,26 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
 
    const date = moment.utc(`${year}-${month}-${day}`, "YYYY-MM-DD");
 
+   const randomDir = Date.now();
+   const dir = `images/${randomDir}`;
+
+   directoryCreator(dir).then(exist => {
+      if (!exist) {
+         fs.mkdir(dir, err => console.log(err));
+      }
+   });
+
+   const filename = `employee-${Date.now()}.jpeg`;
+   const directory = `${dir}/${filename}`;
+
+   await sharp(req.file.buffer)
+      .toFormat('jpeg')
+      .jpeg({
+         quality: 100,
+      })
+      .toFile(directory);
+
+
    if (!req.body.userId || !req.body.temperature) {
       const error = new Error('Please provide the user ID');
       error.statusCode = 404;
@@ -60,12 +83,12 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
 
    let employeeId;
 
-   const filePath = req.file.path;
+   // const filePath = req.file.path;
 
    const python = spawn('python', [
       'inference.py',
       `${req.body.userId}`,
-      `./${filePath}`
+      `./${directory}`
    ]);
 
    python.stdout.on('data', function (data) {
@@ -100,7 +123,7 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
                docs.temperature = req.body.temperature;
                docs.markAttendence();
                docs.save().then((doc) => {
-                  removeFile(req);
+                  removeFile(dir);
 
                   if (code === 0) {
                      return res.status(200).send({

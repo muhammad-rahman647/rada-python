@@ -179,7 +179,7 @@ a {
 }
 
 a:hover {
-   color: #224abe;
+   color: #FBCC06;
    text-decoration: underline;
 }
 
@@ -2591,8 +2591,8 @@ fieldset:disabled a.btn {
 .btn-primary:not(:disabled):not(.disabled).active,
 .show>.btn-primary.dropdown-toggle {
    color: #fff;
-   background-color: #2653d4;
-   border-color: #244ec9;
+   background-color: #FBCC06;
+   border-color: #FBCC06;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active:focus,
@@ -5044,7 +5044,7 @@ input[type="button"].btn-block {
 
 .page-link:hover {
    z-index: 2;
-   color: #224abe;
+   color: #FBCC06;
    text-decoration: none;
    background-color: #eaecf4;
    border-color: #dddfeb;
@@ -5053,7 +5053,7 @@ input[type="button"].btn-block {
 .page-link:focus {
    z-index: 2;
    outline: 0;
-   box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+   box-shadow: 0 0 0 0.2rem rgba(247, 231, 12, 0.25);
 }
 
 .page-item:first-child .page-link {
@@ -5161,7 +5161,7 @@ a.badge:focus {
 a.badge-primary:hover,
 a.badge-primary:focus {
    color: #fff;
-   background-color: #2653d4;
+   background-color: #FBCC06;
 }
 
 a.badge-primary:focus,
@@ -6736,7 +6736,7 @@ a.bg-primary:hover,
 a.bg-primary:focus,
 button.bg-primary:hover,
 button.bg-primary:focus {
-   background-color: #2653d4 !important;
+   background-color: #FBCC06 !important;
 }
 
 .bg-secondary {

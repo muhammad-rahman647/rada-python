@@ -81,8 +81,6 @@ exports.resetPasswordOne = (Model, renderView, redirectView) =>
          },
       });
 
-      console.log(doc);
-
       if (!doc) {
          return res.render(renderView, {
             userId: userId,

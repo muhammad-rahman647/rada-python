@@ -1,23 +1,27 @@
 const fs = require('fs');
+const sharp = require('sharp');
 const multer = require('multer');
+const catchAsync = require('../utils/catchAsync');
 
-const storage = multer.diskStorage({
-   destination: (req, file, cb) => {
-      const randomDir = Date.now();
+const storage = multer.memoryStorage();
 
-      const dir = `images/${randomDir}`;
+// const storage = multer.diskStorage({
+//    destination: (req, file, cb) => {
+//       const randomDir = Date.now();
 
-      fs.exists(dir, exist => {
-         if (!exist) {
-            return fs.mkdir(dir, error => cb(error, dir))
-         }
-         return cb(null, dir)
-      });
-   },
-   filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.originalname)
-   }
-});
+//       const dir = `images/${randomDir}`;
+
+//       fs.exists(dir, exist => {
+//          if (!exist) {
+//             return fs.mkdir(dir, error => cb(error, dir))
+//          }
+//          return cb(null, dir)
+//       });
+//    },
+//    filename: (req, file, cb) => {
+//       cb(null, Date.now() + '-' + file.originalname)
+//    }
+// });
 
 const fileFilter = (req, file, cb) => {
    if (

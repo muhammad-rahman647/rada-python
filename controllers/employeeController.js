@@ -89,15 +89,19 @@ exports.attendence = catchAsync(async (req, res, next) => {
         outTemperature: 1,
         inTime: 1,
         outTime: 1,
-        name: "$name.name"
+        name: "$name.name",
       },
-    },
+    }
   ]);
 
   if (attendence.length === 0) {
     req.flash('error_msg', 'selected year or month data not found.');
     return res.redirect('/user/dashboard');
   }
+
+  attendence.push({
+    total_attendence: attendence.length
+  });
 
   const attendenceName = 'attendence-' + employee._id + '.csv';
 
@@ -288,6 +292,7 @@ exports.getCurrentDateAttendence = catchAsync(async (req, res, next) => {
       },
     },
   ]);
+
 
   if (employees.length === 0) {
     req.flash('error_msg', 'data not found.');

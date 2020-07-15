@@ -96,7 +96,7 @@ def check_add_train(creds_path, group, person, images):
         person_object = persons[idx]
     
     for image in images:
-        if image.endswith('jpg'):
+        if image.endswith('jpeg'):
             add_image(client, persongroup, person_object, image)
         else:
             print("Error: Please provide images with jpg format")
@@ -115,6 +115,6 @@ if __name__=='__main__':
     group = args.id
     person = args.person
     images_path = args.images
-    images = glob.glob(os.path.join(images_path, '*.jpg'))
+    images = glob.glob(os.path.join(images_path, '*.jpeg'))
     id_for_person = check_add_train(creds_path, group, person, images)
     print(id_for_person)
