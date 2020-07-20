@@ -126,7 +126,7 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
                   removeFile(dir);
 
                   if (code === 0) {
-                     return res.status(200).send({
+                     return res.status(200).json({
                         status: 'success',
                         data: {}
                      });
