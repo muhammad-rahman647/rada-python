@@ -145,31 +145,35 @@ exports.verifyImages = (req, res, next) => {
 
 exports.createEmployee = async (req, res, next) => {
    let trainId = '';
-   const randomDir = Date.now();
-   const dir = `images/${randomDir}`;
-   req.body.photos = [];
-   req.body.dir = dir;
+   if (req.files) {
+      const randomDir = Date.now();
+      const dir = `images/${randomDir}`;
+      req.body.photos = [];
+      req.body.dir = dir;
 
-   directoryCreator(dir).then((exist) => {
-      if (!exist) {
-         fs.mkdir(dir, (err) => console.log(err));
-      }
-   });
+      directoryCreator(dir).then((exist) => {
+         if (!exist) {
+            fs.mkdir(dir, (err) => console.log(err));
+         }
+      });
+      await Promise.all(
+         req.files.map(async (file, i) => {
+            const filename = `employee-${Date.now()}-${i + 1}.jpeg`;
 
-   await Promise.all(
-      req.files.map(async (file, i) => {
-         const filename = `employee-${Date.now()}-${i + 1}.jpeg`;
+            await sharp(file.buffer)
+               .toFormat('jpeg')
+               .jpeg({
+                  quality: 100,
+               })
+               .toFile(`${dir}/${filename}`);
 
-         await sharp(file.buffer)
-            .toFormat('jpeg')
-            .jpeg({
-               quality: 100,
-            })
-            .toFile(`${dir}/${filename}`);
-
-         req.body.photos.push(filename);
-      })
-   );
+            req.body.photos.push(filename);
+         })
+      );
+   } else {
+      req.flash('error_msg', 'please provide images.');
+      return res.redirect('/user/add-Employee');
+   }
 
    const newEmployee = new Employee(req.body);
 
