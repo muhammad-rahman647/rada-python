@@ -115,7 +115,8 @@ app.use((error, req, res, next) => {
   error.status = error.status || 'error';
 
   if (req.originalUrl.startsWith('/api')) {
-    res.status(error.statusCode).json({
+    console.log(error);
+    return res.status(error.statusCode).json({
       status: error.status,
       error: error,
       message: error.message,

@@ -106,7 +106,7 @@ exports.attendence = catchAsync(async (req, res, next) => {
     }
   });
 
-  const attendenceName = 'attendence-' + employee._id + '.csv';
+  const attendenceName = `${newattendence[0].name}-${req.query.month}.csv`;
 
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader(
@@ -208,7 +208,7 @@ exports.getByDate = catchAsync(async (req, res, next) => {
     return res.redirect('/user/dashboard');
   }
 
-  const attendence = 'attendence-' + Date.now() + '.csv';
+  const attendence = 'attendence-' + month + '.csv';
 
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'inline; filename="' + attendence + '"');
@@ -302,7 +302,7 @@ exports.getCurrentDateAttendence = catchAsync(async (req, res, next) => {
     return res.redirect('/user/dashboard');
   }
 
-  const attendence = 'attendence-' + Date.now() + '.csv';
+  const attendence = `attendence-${year}-${month}-${date}.csv`;
 
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', 'inline; filename="' + attendence + '"');

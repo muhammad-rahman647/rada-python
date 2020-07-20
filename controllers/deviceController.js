@@ -105,50 +105,49 @@ exports.receiveRequest = catchAsync(async (req, res, next) => {
          return next(error);
       }
 
-      // let attendece = false;
-
-      promiseReplace(employeeId).then(uid => {
-         id = uid.trim();
-
-         if (id) {
-            Attendence.findOne({
-               _employeeId: id,
-               date: {
-                  $eq: date
+      if (code === 0) {
+         if (employeeId.match(/not/g)) {
+            removeFile(dir);
+            return res.status(404).json({
+               status: 'fail',
+               data: {
+                  message: 'Group not found!'
                }
-            }).then(docs => {
-               if (!docs) {
-                  return createAttendence(id, code, req, res);
-               }
-               docs.temperature = req.body.temperature;
-               docs.markAttendence();
-               docs.save().then((doc) => {
-                  removeFile(dir);
-
-                  if (code === 0) {
-                     return res.status(200).json({
-                        status: 'success',
-                        data: {}
-                     });
-                  }
-               }).catch(err => next(err));
-            }).catch(err => next(err));
+            });
          }
+         promiseReplace(employeeId).then(uid => {
+            id = uid.trim();
 
-      }).catch(err => console.log(err));
+            if (id) {
+               Attendence.findOne({
+                  _employeeId: id,
+                  date: {
+                     $eq: date
+                  }
+               }).then(docs => {
+                  if (!docs) {
+                     return createAttendence(id, code, req, res);
+                  }
+                  docs.temperature = req.body.temperature;
+                  docs.markAttendence();
+                  docs.save().then((doc) => {
+                     removeFile(dir);
 
-      // Attendence.findOne({
-      //    _employeeId: id,
-      //    date: new Date(year, month, date)
-      // }).then(doc => {
-      //    if (!doc) {
-      //       return attendece = true;
-      //    }
-      //    console.log(doc);
-      // }).catch(err => console.log(err));
+                     if (code === 0) {
+                        return res.status(200).json({
+                           status: 'success',
+                           data: {}
+                        });
+                     }
+                  }).catch(err => next(err));
+               }).catch(err => next(err));
+            }
 
-      // send data to browse;
+         }).catch(err => console.log(err));
+      }
+
       if (code === 1) {
+         removeFile(dir);
          return res.status(404).json({
             status: 'fail',
             data: {
