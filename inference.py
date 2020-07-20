@@ -47,12 +47,23 @@ def run_inference(creds_path, persongroup, path):
         print("Invalid Path")
         print("Error: {}".format(e))
         sys.exit()
-        
+    
+    groups = client.person_group.list()
+    group_names = [group.name for group in groups]
+    
+    persongroup = group
+    # Add group if not found
+    if not persongroup in group_names:
+        print("Group not found")
+        sys.exit()
+    
     face_ids = []
     azureids = []
     file = path.split(os.sep)[-1]
     try: 
-        faces = client.face.detect_with_stream(image)
+        faces = client.face.detect_with_stream(image, 
+                                               recognition_model='recognition_03',
+                                               detection_model='detection_02')
         if not faces:
             raise Exception('No face detected from image {}'.format(file))
     except Exception as e: 
@@ -67,6 +78,9 @@ def run_inference(creds_path, persongroup, path):
     for person, face in zip(results, faces):
         if person.candidates:
             azureid = person.candidates[0].person_id
+            name = client.person_group_person.get(persongroup, azureid).name
+            # score = person.candidates[0].confidence
+            # print("Detected {} with {} confidence".format(name, score))
             azureids.append(azureid)
         else:
             not_found += 1
