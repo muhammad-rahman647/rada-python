@@ -3,3 +3,14 @@
 ::1 - - [26/Jul/2020:12:49:39 +0000] "GET /favicon.ico HTTP/1.1" 404 -
 ::1 - - [26/Jul/2020:12:49:53 +0000] "GET /logOut HTTP/1.1" 302 46
 ::1 - - [26/Jul/2020:12:49:54 +0000] "GET / HTTP/1.1" 200 -
+::1 - - [26/Jul/2020:15:47:39 +0000] "GET / HTTP/1.1" 304 -
+::1 - - [26/Jul/2020:15:47:44 +0000] "GET /user/login HTTP/1.1" 200 -
+::ffff:127.0.0.1 - - [26/Jul/2020:15:47:56 +0000] "POST /user/login HTTP/1.1" 302 74
+::1 - - [26/Jul/2020:15:47:57 +0000] "GET /user/dashboard HTTP/1.1" 304 -
+::1 - - [26/Jul/2020:15:48:06 +0000] "GET /user/add-Employee HTTP/1.1" 200 -
+::1 - - [26/Jul/2020:15:48:58 +0000] "POST /user/addEmployee HTTP/1.1" 302 80
+::1 - - [26/Jul/2020:15:49:02 +0000] "GET /user/add-Employee HTTP/1.1" 304 -
+::1 - - [26/Jul/2020:15:49:19 +0000] "GET /user/dashboard HTTP/1.1" 200 -
+::1 - - [26/Jul/2020:15:56:31 +0000] "GET /user/dashboard HTTP/1.1" 200 -
+::1 - - [26/Jul/2020:15:56:34 +0000] "GET /user/add-Employee HTTP/1.1" 304 -
+::1 - - [26/Jul/2020:15:58:45 +0000] "POST /user/addEmployee HTTP/1.1" - -

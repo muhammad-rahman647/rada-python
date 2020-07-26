@@ -11,9 +11,6 @@ const User = require('../models/user');
 const Employee = require('../models/employee');
 const factory = require('./factory');
 const catchAsync = require('../utils/catchAsync');
-const {
-   exist
-} = require('@hapi/joi');
 
 const EMPLOYEES_PER_PAGE = 50;
 
@@ -200,9 +197,8 @@ exports.createEmployee = async (req, res, next) => {
       console.log(`child process close all stdio with code ${code}`);
 
       if (code === 1) {
-         const error = new Error('Something wrong...');
-         error.statusCode = 500;
-         return next(error);
+         req.flash('error_msg', 'Successfully not Added.....');
+         return res.redirect('/user/add-Employee');
       }
 
       // send data to browse;
