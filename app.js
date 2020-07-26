@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const passport = require('passport');
@@ -64,6 +65,12 @@ app.use(
     // }
   })
 );
+
+app.use(morgan('common', {
+  stream: fs.createWriteStream('./access.log', {
+    flags: 'a'
+  })
+}));
 
 // development logging
 if (process.env.NODE_ENV === 'development') {
